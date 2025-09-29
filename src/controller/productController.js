@@ -13,6 +13,8 @@ export const getProducts = async(req, res)=> {
     }
 }
 
+// @access private
+
 export const createProducts = async(req, res, next) => {
     try {
         const {name, price, brand, type, warranty, startDate, serialNumber, image, status} = req.body
@@ -62,6 +64,9 @@ export const getProduct = async(req, res, next) => {
     }
 
 }
+
+// @access private
+
 export const updateProducts = async (req, res, next) => {
       try {
         const id = req.params.id
@@ -92,6 +97,10 @@ export const updateProducts = async (req, res, next) => {
         
     }
 }
+
+
+// @access private
+
 export const delProduct = async(req, res, next) => {
      try {
         const id = req.params.id

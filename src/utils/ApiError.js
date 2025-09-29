@@ -5,12 +5,11 @@ export class ApiError extends Error  {
         super(message)
 
         this.statusCode = statusCode
-                console.log("[Check error]: ", statusCode, message)
+        console.log("[Check error]: ", statusCode, message)
 
 
     }
 }
-
 
 export class NotFoundError extends ApiError {
     constructor(path){

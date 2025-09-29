@@ -1,9 +1,10 @@
 import mongoose, { Schema } from "mongoose";
-import bcrypt from "bcrypt"
+// import bcrypt from "bcrypt"
 
 
 const userSchema = new mongoose.Schema({
 
+   
     email: {
         type: String,
         required: [true, "Please add an email"],
@@ -11,11 +12,11 @@ const userSchema = new mongoose.Schema({
     },
     password: {
         type: String,
-        required: true
+        required: [true, "Please add the user password"]
     }
 ,
    
-    phome: {
+    username: {
         type: String,
         required: true
         }

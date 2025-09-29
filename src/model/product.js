@@ -1,18 +1,12 @@
-//  id: 1,
-//     name: 'Smartphone X1',
-//     brand: 'TechBrand',
-//     type: 'Electronics',
-//     warranty: '12 months',
-//     startDate: '2024-01-15',
-//     serialNumber: 'SN123456789',
-//     price: '$499',
-//     image: 'https://images.unsplash.com/photo-1510557880182-3d4d3cba35a5?w=500',
-//     status: 'Active',
-
-
 import mongoose from "mongoose";
 
 const productSchema = new mongoose.Schema({
+     user_id: {
+        type: mongoose.Schema.Types.ObjectId,
+        required: true,
+        ref: "User"
+    },
+
     name: {
         type: String,
         required: true
