@@ -1,5 +1,5 @@
 import express from "express"
-import { createProducts, delProduct, getProduct, getProducts, updateProducts } from "../controller/productController.js"
+import { createProduct, delProduct, getProduct, getProducts, updateProduct } from "../controller/productController.js"
 import validateToken from "../middleware/validateTokenHandler.js"
 
 const router = express.Router()
@@ -7,8 +7,8 @@ const router = express.Router()
 router.get("/", getProducts )
 router.get("/:id", getProduct)
 
-router.post("/", validateToken, createProducts)
-router.patch("/:id", validateToken, updateProducts)
+router.post("/", validateToken, createProduct)
+router.patch("/:id", validateToken, updateProduct)
 router.delete("/:id", validateToken, delProduct)
 
 export default router

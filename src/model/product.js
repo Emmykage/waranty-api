@@ -1,50 +1,30 @@
-import mongoose from "mongoose";
+import pool from "../database/dbConnection.js"
 
-const productSchema = new mongoose.Schema({
-     user_id: {
-        type: mongoose.Schema.Types.ObjectId,
-        required: true,
-        ref: "User"
-    },
+const createProductTable = async() => {
+    const queryText = `
+    CREATE TABLE IF NOT EXISTS products (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    serialNumber VARCHAR(100),
+    price DECIMAL(10,2),
+    type VARCHAR(100),
+    startDate TIMESTAMP,
+    status VARCHAR(100),
+    warranty VARCHAR(100),
+    note TEXT,    
+    created_at TIMESTAMP DEFAULT NOW(),
+    updated_at TIMESTAMP DEFAULT NOW()
 
-    name: {
-        type: String,
-        required: true
-    },
-    brand: {
-        type: String,
-    },
-    type: {
-        type: String,
-        required: true
-    },
-    warranty: {
-        type: String,
-        required: true
-    } ,
-    startDate: {
-        type: Date,
-        required: true
-    } 
-    , 
-    serialNumber: {
-        type: String,
-        required: true
-    },  
-    price: {
-        type: Number,
-        required: true
-    }, 
-    status: {
-        type: String,
-        required: true
-    },
-    image: {
-        type: String,
-        required: true
+    )
+    `
+    try {
+        pool.query(queryText)
+        console.log("[PRODUCT TRABLE CREATED]")
+    } catch (error) {
+        console.log("[ERROR: Error creating product table]")
+        
     }
-})
 
+}
 
-
-export const Product = mongoose.model("Product", productSchema)
+export default createProductTable

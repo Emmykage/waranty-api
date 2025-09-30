@@ -1,6 +1,6 @@
 import { StatusCodes } from "http-status-codes"
 import { ApiError } from "../utils/ApiError.js"
-import { Product } from "../model/product.js"
+import ProductService from "../services/productService.js"
 
 export const getProducts = async(req, res)=> {
     try {
@@ -15,26 +15,21 @@ export const getProducts = async(req, res)=> {
 
 // @access private
 
-export const createProducts = async(req, res, next) => {
+export const createProduct = async(req, res, next) => {
     try {
         const {name, price, brand, type, warranty, startDate, serialNumber, image, status} = req.body
-        console.log("request body is ", name)
-
         if(!name){
             res.status(400)
             throw new ApiError(StatusCodes.BAD_REQUEST, "All field should be presetn")
 
         }
 
-        const product = await Product.create({
-            name, price, brand, type, warranty, startDate, serialNumber, image, status
-        })
-
+        const product = await ProductService.createProduct(req.body)
     
         res.json({data: product, message: "Product created"})
 
     } catch (error) {
-        // res.json({mssage: error.message})
+
         next(error)
 
         
@@ -49,13 +44,8 @@ export const getProduct = async(req, res, next) => {
             throw new ApiError(StatusCodes.NOT_FOUND, "ID not found")
         }
 
-        const product = await Product.findById(req.params.id)
+        const product = await ProductService.getProduct(id)
 
-        if(!product){
-            throw new ApiError(StatusCodes.NOT_FOUND, "Item not found")
-
-        }
-        console.log(product)
         res.status(StatusCodes.OK).json({data: product, message: "Product created"})
 
     } catch (error) {
@@ -67,31 +57,17 @@ export const getProduct = async(req, res, next) => {
 
 // @access private
 
-export const updateProducts = async (req, res, next) => {
+export const updateProduct = async (req, res, next) => {
       try {
         const id = req.params.id
         if(!id) {
             throw new ApiError(StatusCodes.NOT_FOUND, "ID not found")
         }
-        const product = Product.findById()
-
-          if(!product) {
-            throw new ApiError(StatusCodes.NOT_FOUND, "Product not found")
-        }
-
-        const updateProduct = await Product.findByIdAndUpdate(
-            id, 
-            req.body,
-            {new: true}
-        )
-
       
-
-    
+        const updateProduct = await ProductService.updateProduct(id, req.body)    
         res.json({data: updateProduct, message: "Product created"})
 
     } catch (error) {
-        // res.json({mssage: error.message})
         next(error)
 
         
@@ -107,23 +83,13 @@ export const delProduct = async(req, res, next) => {
         if(!id) {
             throw new ApiError(StatusCodes.NOT_FOUND, "ID not found")
         }
-        // const product = await Product.findById()
-        // console.log(product)
-
-        //   if(!product) {
-        //     throw new ApiError(StatusCodes.NOT_FOUND, "Product not found")
-        // }
-
-
-
-        await Product.findByIdAndDelete(id)
+        const deletedProduct = await ProductService.deleteProduct(id)
       
 
     
-        res.json({ message: "Product deleted"})
+        res.json({data: deletedProduct,  message: "Product deleted"})
 
     } catch (error) {
-        // res.json({mssage: error.message})
         next(error)
 
         

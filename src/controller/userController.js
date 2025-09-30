@@ -1,9 +1,8 @@
 import { StatusCodes } from "http-status-codes"
 import { ApiError } from "../utils/ApiError.js"
-import { Product } from "../model/product.js"
-import { User } from "../model/user.js"
 import bcrypt from "bcryptjs"
 import jwt from "jsonwebtoken"
+import UserService from "../services/userServices.js"
 
 export const loginUser = async(req, res, next)=> {
     const {email, password} = req.body
@@ -12,7 +11,7 @@ export const loginUser = async(req, res, next)=> {
             throw new ApiError(StatusCodes.BAD_REQUEST, "All fields are required")
 
         }
-        const user = await User.findOne({email})
+        const user = await UserService.loginUser(email)
         const user_v = await bcrypt.compare(password, user.password)
 
         if(user && user_v ){
@@ -48,59 +47,34 @@ export const registerUser = async(req, res, next) => {
             throw new ApiError(StatusCodes.BAD_REQUEST, "All field should be presetn")
 
         }
-        const userExist = await User.findOne({email})
 
-
-
-        if(userExist){
-            throw new ApiError(StatusCodes.UNPROCESSABLE_ENTITY, "user already exists") 
-        }
-
-
-        const hashedPassword = await bcrypt.hash(password, 10)
-
-        console.log(hashedPassword)
-        const user = await User.create({
-            email, 
-            password: hashedPassword, 
-            username
-        })
-
-
+        const user = await UserService.registerUser({email, password, username})
         if(user){
         res.status(StatusCodes.CREATED).json({data: {id: user.id, email: user.email, username:  user.username}, message: "user created"})
 
         }else{
             throw new ApiError(StatusCodes.FORBIDDEN, "Request was not valid")
-        }
-
-    
+        }   
 
     } catch (error) {
-        // res.json({mssage: error.message})
         next(error)
 
         
     }
 }
-export const currentUser = async(req, res, next) => {
-    const id  = req.user.id
 
-    console.log(id, "[ID]: Id fetched")
+export const getUsers = async(req, res, next) => {
+
+    console.log(id, "[FETCH USERS]: users is being retrieved")
     try {
-        if(!id) {
-            throw new ApiError(StatusCodes.NOT_FOUND, "ID not found")
-        }
+       
 
-        const user = await Product.findById(req.params.id)
-
-        if(!user){
-            throw new ApiError(StatusCodes.NOT_FOUND, "Item not found")
+        const users = await UserService.getUsers()
+        if(!users){
+            throw new ApiError(StatusCodes.NOT_FOUND, "User not found")
 
         }
-
-
-        res.status(StatusCodes.OK).json({data: user, message: "Product created"})
+        res.status(StatusCodes.OK).json({data: users, message: "users fetched"})
 
     } catch (error) {
         next(error)
@@ -108,25 +82,40 @@ export const currentUser = async(req, res, next) => {
     }
 
 }
-export const updateProducts = async (req, res, next) => {
+export const currentUser = async(req, res, next) => {
+    const id  = req.user.id
+
+    console.log(id, "[FETCHED ID]: current user is being retrieved")
+    try {
+        if(!id) {
+            throw new ApiError(StatusCodes.NOT_FOUND, "ID not found")
+        }
+
+
+        const user = await UserService.currentUser(id)
+         
+
+        if(!user){
+            throw new ApiError(StatusCodes.NOT_FOUND, "user not found")
+
+        }
+
+        res.status(StatusCodes.OK).json({data: user, message: "user fetched"})
+
+    } catch (error) {
+        next(error)
+
+    }
+
+}
+export const updateUser = async (req, res, next) => {
       try {
         const id = req.params.id
         if(!id) {
             throw new ApiError(StatusCodes.NOT_FOUND, "ID not found")
         }
-        const user = User.findById()
-
-          if(!user) {
-            throw new ApiError(StatusCodes.NOT_FOUND, "Product not found")
-        }
-
-        const updateUser = await User.findByIdAndUpdate(
-            id, 
-            req.body,
-            {new: true}
-        )
-
-      
+        
+        const updatedUser =  await UserService.updateUser(id, req.params.body)
 
     
         res.json({data: updateUser, message: "Product created"})
@@ -144,21 +133,8 @@ export const delUser = async(req, res, next) => {
         if(!id) {
             throw new ApiError(StatusCodes.NOT_FOUND, "ID not found")
         }
-        // const product = await Product.findById()
-        // console.log(product)
 
-        //   if(!product) {
-        //     throw new ApiError(StatusCodes.NOT_FOUND, "Product not found")
-        // }
-
-
-
-        await User.findByIdAndDelete(id)
-
-        await User.deleteOne({_id: id})
-      
-
-    
+        await UserService.deleteUser(id)    
         res.json({ message: "USer deleted"})
 
     } catch (error) {
