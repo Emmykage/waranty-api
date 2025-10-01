@@ -1,7 +1,7 @@
-import pool from "../database/dbConnection.js"
+import pool from '../database/dbConnection.js';
 
-const creatUserTable = async() => {
-    const queryText = `
+const creatUserTable = async () => {
+  const queryText = `
     CREATE TABLE IF NOT EXISTS users (
     id SERIAL PRIMARY KEY,
     username VARCHAR(100) NOT NULL,
@@ -11,16 +11,14 @@ const creatUserTable = async() => {
     updated_at TIMESTAMP DEFAULT NOW()
 
     )
-    `
+    `;
 
+  try {
+    await pool.query(queryText);
+    console.log('[USER TABLE CREATED]');
+  } catch (error) {
+    console.log('[ERROR: Error creating user]');
+  }
+};
 
-    try {
-       await pool.query(queryText)
-        console.log("[USER TABLE CREATED]")
-    } catch (error) {
-        console.log("[ERROR: Error creating user]")
-        
-    }
-}
-
-export default creatUserTable
+export default creatUserTable;

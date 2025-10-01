@@ -1,7 +1,7 @@
-import pool from "../database/dbConnection.js"
+import pool from '../database/dbConnection.js';
 
-const createProductTable = async() => {
-    const queryText = `
+const createProductTable = async () => {
+  const queryText = `
     CREATE TABLE IF NOT EXISTS products (
     id SERIAL PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
@@ -16,24 +16,21 @@ const createProductTable = async() => {
     updated_at TIMESTAMP DEFAULT NOW()
 
     )
-    `
+    `;
 
-    
-    const updateTable = `
+  const updateTable = `
     
     ALTER TABLE products
     ADD COLUMN IF NOT EXISTS image_url VARCHAR(255);
 
-    `
-    try {
-       await pool.query(queryText)
-        await pool.query(updateTable)
-        console.log("[PRODUCT TRABLE CREATED]")
-    } catch (error) {
-        console.log("[ERROR: Error creating product table]")
-        
-    }
+    `;
+  try {
+    await pool.query(queryText);
+    await pool.query(updateTable);
+    console.log('[PRODUCT TRABLE CREATED]');
+  } catch (error) {
+    console.log('[ERROR: Error creating product table]');
+  }
+};
 
-}
-
-export default createProductTable
+export default createProductTable;

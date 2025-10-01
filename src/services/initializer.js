@@ -1,13 +1,10 @@
-import creatUserTable from "../model/user.js";
-import createProductTable from "../model/product.js"
+import creatUserTable from '../model/user.js';
+import createProductTable from '../model/product.js';
 
-console.log("[Initializing DB]")
+console.log('[Initializing DB]');
 
-  await  creatUserTable()
-  await  createProductTable()
+await creatUserTable();
+await createProductTable();
 
-console.log("[DB initialized]: Task completed")
+console.log('[DB initialized]: Task completed');
 
-// }
-
-// export default initDB
