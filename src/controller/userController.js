@@ -14,24 +14,22 @@ export const loginUser = async(req, res, next)=> {
         const user = await UserService.loginUser(email)
         const user_v = await bcrypt.compare(password, user.password)
 
-        if(user && user_v ){
-        const accessToken = jwt.sign({
-            user: {
-                username: user.username,
-                email: user.email,
-                id: user.id
+        if(!user || !user_v ){
+                    throw new ApiError(StatusCodes.BAD_GATEWAY, "Invalid Password")
 
-            }
-        }, 
-
-        process.env.ACCESS_TOKEN_SECRET,
-        {expiresIn: "1d"})
-        res.status(200).json({accessToken: accessToken, user_v, data: user, message:"user login"})
-
-        }else{
-
-            throw new ApiError(StatusCodes.BAD_GATEWAY, "Invalid Password")
         }
+        const accessToken = jwt.sign({
+                user: {
+                    username: user.username,
+                    email: user.email,
+                    id: user.id
+
+                }
+                }, 
+
+                process.env.ACCESS_TOKEN_SECRET,
+                {expiresIn: "1d"})
+                res.status(200).json({accessToken: accessToken, user_v, data: user, message:"user login"})
 
     } catch (error) {
         next(error)
