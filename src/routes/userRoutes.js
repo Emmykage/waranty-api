@@ -9,7 +9,7 @@ router.post("/login", loginUser)
 
 router.get("/current_user", validateToken, currentUser)
 router.post("/register", validateUser, registerUser)
-router.patch("/:id", updateUser)
+router.patch("/:id",validateToken, updateUser)
 router.delete("/:id", delUser)
 
 

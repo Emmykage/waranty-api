@@ -25,7 +25,7 @@ export const loginUser = async(req, res, next)=> {
         }, 
 
         process.env.ACCESS_TOKEN_SECRET,
-        {expiresIn: "1m"})
+        {expiresIn: "1d"})
         res.status(200).json({accessToken: accessToken, user_v, data: user, message:"user login"})
 
         }else{
@@ -41,12 +41,16 @@ export const loginUser = async(req, res, next)=> {
 
 export const registerUser = async(req, res, next) => {
     try {
+
+        console.log("[creating user]: User creation initialized")
         const {email, password, username} = req.body
 
         if(!email || !password || !username){
-            throw new ApiError(StatusCodes.BAD_REQUEST, "All field should be presetn")
+            throw new ApiError(StatusCodes.BAD_REQUEST, "All field should be preset")
 
         }
+
+
 
         const user = await UserService.registerUser({email, password, username})
         if(user){
@@ -110,7 +114,27 @@ export const currentUser = async(req, res, next) => {
 }
 export const updateUser = async (req, res, next) => {
       try {
-        const id = req.params.id
+        const id = req.params.id ?? req.user.id
+        if(!id) {
+            throw new ApiError(StatusCodes.NOT_FOUND, "ID not found")
+        }
+        
+        const updatedUser =  await UserService.updateUser(id, req.body)
+
+    
+        res.json({data: updatedUser, message: "Product created"})
+
+    } catch (error) {
+        // res.json({mssage: error.message})
+        next(error)
+
+        
+    }
+}
+
+export const updateCurrentUser = async (req, res, next) => {
+      try {
+        const id =  req.user.id
         if(!id) {
             throw new ApiError(StatusCodes.NOT_FOUND, "ID not found")
         }

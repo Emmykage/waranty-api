@@ -2,9 +2,9 @@ import { StatusCodes } from "http-status-codes"
 import { ApiError } from "../utils/ApiError.js"
 import ProductService from "../services/productService.js"
 
-export const getProducts = async(req, res)=> {
+export const getProducts = async(req, res, next)=> {
     try {
-            const products = await Product.find()
+            const products = await ProductService.getProducts()
             res.status(200).json({data: products, message:"Get all product"})
 
     } catch (error) {
@@ -65,7 +65,7 @@ export const updateProduct = async (req, res, next) => {
         }
       
         const updateProduct = await ProductService.updateProduct(id, req.body)    
-        res.json({data: updateProduct, message: "Product created"})
+        res.json({data: updateProduct, message: "Product updated"})
 
     } catch (error) {
         next(error)

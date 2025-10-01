@@ -17,8 +17,17 @@ const createProductTable = async() => {
 
     )
     `
+
+    
+    const updateTable = `
+    
+    ALTER TABLE products
+    ADD COLUMN IF NOT EXISTS image_url VARCHAR(255);
+
+    `
     try {
-        pool.query(queryText)
+       await pool.query(queryText)
+        await pool.query(updateTable)
         console.log("[PRODUCT TRABLE CREATED]")
     } catch (error) {
         console.log("[ERROR: Error creating product table]")

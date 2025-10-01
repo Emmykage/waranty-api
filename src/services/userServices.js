@@ -1,10 +1,22 @@
+import { StatusCodes } from "http-status-codes"
 import pool from "../database/dbConnection.js"
 import { ApiError } from "../utils/ApiError.js"
+import bcrypt from "bcryptjs"
 
 class UserService {
     static loginUser = async(email)=> {
-        const result = await pool.query("SELECT * FROM users WHERE email = $1", email)
-        return result.rows[0]
+        try {
+        const result = await pool.query("SELECT * FROM users WHERE email = $1", [email])
+
+        if(result.rows.length === 0){
+            throw new ApiError(StatusCodes.NOT_FOUND, "user not found")
+        }
+        return result.rows[0]    
+        } catch (error) {
+            throw error
+            
+        }
+
     }
 
      static registerUser = async({email, username, password})=> {
@@ -44,9 +56,12 @@ class UserService {
     static currentUser = async (id) => {
         try{
             
-        const result = await pool.query("SELECT * FROM users WHERE id = $1", id)
-        const user = result.rows[0]
-        return user
+        const result = await pool.query("SELECT * FROM users WHERE id = $1", [id])
+
+        if(result.rows.length === 0){
+            throw new ApiError(StatusCodes.NOT_FOUND, "user not found")
+        }
+        return result.rows[0]
         }catch(err){
             throw err
         }
@@ -54,22 +69,27 @@ class UserService {
     }
 
     static updateUser = async (id, data) => {
-        try {
-        const user = await pool.query("SELECT * FROM users WHERE id = $1", id)
+       const fields = [];
+        const values = [];
+        let index = 1;
 
-          if(!user) {
-            throw new ApiError(StatusCodes.NOT_FOUND, "Product not found")
+        for (const [key, value] of Object.entries(data)) {
+            fields.push(`${key} = $${index}`);
+            values.push(value);
+            index++;
         }
 
-        const result = await pool.query("UPDATE users SET username=$1, email=$2 WHERE id = $3 RETURNING *", [username, email, id])
+        values.push(id);
 
-        const updateUser = result.rows[0]
-        return updateUser
+        const query = `
+            UPDATE users
+            SET ${fields.join(", ")}
+            WHERE id = $${index}
+            RETURNING *;
+        `;
 
-        } catch (error) {
-            throw error
-            
-        }
+        const result = await pool.query(query, values);
+        return result.rows[0];
 
     }
 
